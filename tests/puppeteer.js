@@ -49,27 +49,52 @@ chai.should();
         this.listPeople.should.not.equal(null);
       });
       it("should create a person record given name and age", async function () {
-        await this.nameField.type("Fred");
-        await this.ageField.type("10");
+        await this.nameField.type("Anna");
+        await this.ageField.type("30");
         await this.addPerson.click();
         await sleep(200);
         const resultData = await (
           await this.resultHandle.getProperty("textContent")
         ).jsonValue();
         console.log("at 1, resultData is ", resultData);
-        resultData.should.include("A person record was added");
+        resultData.should.include("A person entry was added.");
         const { index } = JSON.parse(resultData);
         this.lastIndex = index;
       });
       it("should not create a person record without an age", async function () {
         // your code goes here.  Hint: to clear the age field, you need the line
-        // await page.$eval("#age", (el) => (el.value = "")); 
+        // await page.$eval("#age", (el) => (el.value = ""));
+
+        await page.$eval("#age", (el) => (el.value = "")); // clears input field
+        await this.nameField.type("Anna");
+        await this.addPerson.click();
+        await sleep(200);
+        const resultData = await (
+          await this.resultHandle.getProperty("textContent")
+        ).jsonValue();
+        console.log("at 2, resultData is ", resultData);
+        resultData.should.include("Please enter a valid name and age.");
       });
       it("should return the entries just created", async function () {
-         // your code goes here
+        // your code goes here
+        await this.listPeople.click();
+        await sleep(200);
+        const resultData = await (
+          await this.resultHandle.getProperty("textContent")
+        ).jsonValue();
+        console.log("at 3, resultData is ", resultData);
+        resultData.should.include("Anna");
       });
       it("should return the last entry.", async function () {
-         // your code goes here
+        // your code goes here
+        await this.personIndex.type(`${this.lastIndex}`);
+        await this.getPerson.click();
+        await sleep(200);
+        const resultData = await (
+          await this.resultHandle.getProperty("textContent")
+        ).jsonValue();
+        console.log("at 4, resultData is ", resultData);
+        resultData.should.include("Anna");
       });
     });
   });
